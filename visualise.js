@@ -6,7 +6,8 @@ function makeCanvas(width, height) {
 }
 
 function Visualiser(name, canvas) {
-    this.name = name || "";
+    this.name = name || "default";
+    
     if (canvas) {
         this.width = canvas.width || 0;
         this.height = canvas.height || 0;
@@ -17,7 +18,8 @@ function Visualiser(name, canvas) {
         this.ctx.fillStyle = grd;
         this.ctx.strokeStyle = "#ffffff";
         this.clear = function() {this.ctx.clearRect(0, 0, this.width, this.height);}
-    }      
+    }
+    
 }
 
 // data :: Uint8Array. Plots as bar graph
@@ -61,6 +63,39 @@ function LineGraph(name, canvas, data) {
     }
 }
 LineGraph.prototype = new Visualiser;
+
+
+function DynamicLine(name, canvas, timescale, initY) {
+    Visualiser.call(this, name, canvas);
+    this.scale = this.width / timescale;
+    this.ctx.beginPath();
+    this.ctx.moveTo(0, this.height * (1 - initY));
+    
+    var date = new Date();
+    this.prevTime = date.getTime();
+    
+    this.draw = function(d) {
+        var height = this.height;
+        var ctx = this.ctx;
+        var date = new Date();
+        var currTime = date.getTime();
+        
+        var t = ( currTime - this.prevTime ) * 0.001;
+        var x = ( t * this.scale );
+        var y = (1 - d/255) * height;
+        
+        ctx.lineTo( x, y );
+        ctx.stroke();
+        
+        if ( x > this.width ) {
+            this.clear();
+            ctx.beginPath();
+            ctx.moveTo( 0, y );
+            this.prevTime = currTime;
+        }
+        
+    }
+}
 
 
 // used in render loop

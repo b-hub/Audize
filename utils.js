@@ -17,10 +17,10 @@ function AdjacencyMatrix(n) {
         var n1 = p1.n;
         var n2 = p2.n;
         var n = n1 + n2;
-        var avg = new Uint8Array(p1.p.length);
+        var avg = new Array(p1.p.length);
         
         for (var i = 0; i < avg.length; i++) {
-            avg[i] = (n1*p1.p[i] + n2*p2.p[i]) / n;
+            avg[i] = Math.round((n1*p1.p[i] + n2*p2.p[i]) / n);
         }
         
         return {p: avg, n: n};
@@ -61,13 +61,13 @@ function AdjacencyMatrix(n) {
             // replace primary d(p1,_) dependent distances
             var dIndex = this.getDIndex(p1Index);
             for (var i = 0; i < p1Index; i++) {
-                ds[dIndex + i] = getDistance(mergedPoint, ps[i].p);
+                ds[dIndex + i] = getDistance(mergedPoint.p, ps[i].p);
             }
             
             // replace secondary d(_,p1) dependent distances
             for (var i = p1Index+1; i < len; i++) {
                 var dIndex = this.getDIndex(i);
-                ds[dIndex + p1Index] = getDistance(ps[i].p, newPoint);
+                ds[dIndex + p1Index] = getDistance(ps[i].p, mergedPoint.p);
             }
             
             // replace primary d(p2,_) dependent distances
