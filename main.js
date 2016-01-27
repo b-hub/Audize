@@ -28,13 +28,13 @@ var dynamicLine = new DynamicLine("dl", can, 1, 0);
     
 var monitor = new FpsMonitor(50);
 
-var matrix = new AdjacencyMatrix(4);
+var matrix = new AdjacencyMatrix(10);
 
 //-- RENDER LOOP ----------------------------------------------
 function renderFrame() {
     requestAnimationFrame(renderFrame);
     
-    //if (myAudio.paused) return;
+    if (myAudio.paused) return;
 
     analyser.getByteFrequencyData(frequencyData);
     analyser.getByteTimeDomainData(timeData);
@@ -43,15 +43,7 @@ function renderFrame() {
     freqVisualiser.draw();
     waveVisualiser.draw();
     
-    var ctx = test.getContext('2d');
-    ctx.clearRect(0, 0, window.innerWidth, 500);
-    ctx.font = "10px Arial";
-    ctx.fillStyle = "#ffffff";
-    for (var i = 0; i < matrix.points.length; i++){
-        var x = matrix.points[i].p[0];
-        var y = matrix.points[i].p[1]
-        ctx.fillText(i + "(" + matrix.points[i].n + ")", x, y);
-    }
+    matrix.add(frequencyData);
     
 
     d.innerHTML = monitor.getFPS();
@@ -59,16 +51,5 @@ function renderFrame() {
 
 
 //------------------------------------------------------------
-
-var test = makeCanvas(window.innerWidth, 500);
-document.querySelector("#vHolder").appendChild(test);
-
-test.onclick = function(e) {
-    var rect = this.getBoundingClientRect();
-    var xPos = e.clientX - rect.left;
-    var yPos = e.clientY - rect.top;
-    
-    matrix.add([xPos, yPos]);
-}
 
 renderFrame();

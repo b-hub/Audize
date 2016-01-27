@@ -55,31 +55,31 @@ function AdjacencyMatrix(n) {
             var mergedPoint = this.merge(ps[p1Index], ps[p2Index]);
             
             // swap (p1 and p2) for (merged and new point)
-            ps[p1Index] = mergedPoint;
-            ps[p2Index] = {p: newPoint, n: 1};
+            ps[p1Index] = {p: newPoint, n: 1};
+            ps[p2Index] = mergedPoint;
             
             // replace primary d(p1,_) dependent distances
             var dIndex = this.getDIndex(p1Index);
             for (var i = 0; i < p1Index; i++) {
-                ds[dIndex + i] = getDistance(mergedPoint.p, ps[i].p);
+                ds[dIndex + i] = getDistance(newPoint, ps[i].p);
             }
             
             // replace secondary d(_,p1) dependent distances
             for (var i = p1Index+1; i < len; i++) {
                 var dIndex = this.getDIndex(i);
-                ds[dIndex + p1Index] = getDistance(ps[i].p, mergedPoint.p);
+                ds[dIndex + p1Index] = getDistance(ps[i].p, newPoint);
             }
             
             // replace primary d(p2,_) dependent distances
             var dIndex = this.getDIndex(p2Index);
             for (var i = 0; i < p2Index; i++) {
-                ds[dIndex + i] = getDistance(newPoint, ps[i].p);
+                ds[dIndex + i] = getDistance(mergedPoint.p, ps[i].p);
             }
             
             // replace secondary d(_,p2) dependent distances
             for (var i = p2Index+1; i < len; i++) {
                 var dIndex = this.getDIndex(i);
-                ds[dIndex + p2Index] = getDistance(ps[i].p, newPoint);
+                ds[dIndex + p2Index] = getDistance(ps[i].p, mergedPoint.p);
             }
             
         }
