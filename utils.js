@@ -34,6 +34,7 @@ function AdjacencyMatrix(n) {
         
         if (len == 0) {
             ps.push({p: newPoint, n: 1});
+            return len;
             
         } else if (len < n) {
             var dIndex = this.getDIndex(len);
@@ -44,6 +45,7 @@ function AdjacencyMatrix(n) {
             }
             
             ps.push({p: newPoint, n: 1});
+            return len;
         
         // if matrix has reached it's limited size n
         // merge closest 2 points and do some really fancy replacing
@@ -81,6 +83,8 @@ function AdjacencyMatrix(n) {
                 var dIndex = this.getDIndex(i);
                 ds[dIndex + p2Index] = getDistance(ps[i].p, mergedPoint.p);
             }
+            
+            return p2Index;
             
         }
     }

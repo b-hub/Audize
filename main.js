@@ -17,20 +17,20 @@ var graph = new Springy.Graph();
 jQuery(function(){
     var springy = window.springy = jQuery('#springydemo').springy({
         graph: graph,
-        stiffness: 100.0,
-        repulsion: 400.0,
+        stiffness: 10.0,
+        repulsion: 100.0,
         damping: 0.5,
         nodeSelected: function(node){
             console.log('Node selected: ' + JSON.stringify(node.data));
         }
     });
 });
-var n = 10;
-for (var i = 0; i < n; i++) graph.newNode({label: i});
+var n = 20;
+for (var i = 0; i < n; i++) graph.newNode({label: i, size: 10, color: "white"});
 var ns = graph.nodes;
 for (var i = 1; i < n; i++) {
     for (var j = 0; j < i; j++) {
-        graph.newEdge(ns[i], ns[j], {label: 0, length: 0, directional:false});
+        graph.newEdge(ns[i], ns[j], {label: 0, length: 0, directional:false, color: "#aaa"});
     }
 }
 
@@ -66,12 +66,15 @@ function renderFrame() {
     freqVisualiser.draw();
     waveVisualiser.draw();
     
-    matrix.add(frequencyData);
+    var mergedIndex = matrix.add(frequencyData);
     var ps = matrix.points;
     for (var i = 0; i < ps.length; i++) {
         var node = graph.nodes[i];
         var point = ps[i];
         node.data.label = i + "(" + point.n + ")";
+        node.data.size = Math.log(point.n) * 10;
+        if (i == mergedIndex) node.data.color = "red";
+        else node.data.color = "white";
     }
     var ds = matrix.distances;
     for (var i = 0; i < ds.length; i++) {
@@ -80,7 +83,7 @@ function renderFrame() {
         if (d !== "undefined") {
             var edge = graph.edges[i];
             edge.data.label = Math.round(d) + 1;
-            edge.data.length = d;
+            edge.data.length = d
         }
         
     }
