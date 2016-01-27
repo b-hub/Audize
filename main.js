@@ -27,7 +27,6 @@ var waveVisualiser = new LineGraph("t", can, timeData);
 var monitor = new FpsMonitor(50);
 
 var matrix = new AdjacencyMatrix(5);
-console.log("start");
 
 //-- RENDER LOOP ----------------------------------------------
 function renderFrame() {

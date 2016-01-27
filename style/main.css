@@ -1,0 +1,17 @@
+body {
+    background-color: darkslateblue;
+    margin: 0px;
+}
+
+#audioHolder {
+    background-color: cornflowerblue;
+    text-align: center;
+    padding: 5px;
+}
+
+canvas {
+    background-color: black;
+    
+    
+}
+
