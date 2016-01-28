@@ -7,11 +7,13 @@ function getDistance( v1, v2 ) {
 }
 
 function AdjacencyMatrix(n) {
+    // returns the length of an array to store non-redundent adjacency matrix
+    // with x nodes. Equivilent to xChoose2.
+    this.getDIndex = function(x) {return 0.5 * x * (x-1);}
+    
     this.n = n;
     this.points = [];
-    this.distances = new Array(0.5 * n * (n-1));
-    console.log(this.points);
-    console.log(this.distances);
+    this.distances = new Array(this.getDIndex(n));
     
     this.merge = function(p1, p2) {
         var n1 = p1.n;
@@ -26,15 +28,33 @@ function AdjacencyMatrix(n) {
         return {p: avg, n: n};
     }
     
+    this.recalculateDistances = function(newPoint, index) {
+        var ps = this.points;
+        var ds = this.distances;
+        
+        // replace primary d(p1,_) dependent distances
+        var dIndex = this.getDIndex(index);
+        for (var i = 0; i < index; i++) {
+            ds[dIndex + i] = getDistance(newPoint, ps[i].p);
+        }
+
+        // replace secondary d(_,p1) dependent distances
+        for (var i = index+1; i < ps.length; i++) {
+            var dIndex = this.getDIndex(i);
+            ds[dIndex + index] = getDistance(ps[i].p, newPoint);
+        }
+    }
+    
     this.add = function(newPoint) {
         var ps = this.points;
         var ds = this.distances;
         var len = ps.length;
         var n = this.n;
         
+        var currClosestPoint = len;
+        
         if (len == 0) {
             ps.push({p: newPoint, n: 1});
-            return len;
             
         } else if (len < n) {
             var dIndex = this.getDIndex(len);
@@ -45,7 +65,6 @@ function AdjacencyMatrix(n) {
             }
             
             ps.push({p: newPoint, n: 1});
-            return len;
         
         // if matrix has reached it's limited size n
         // merge closest 2 points and do some really fancy replacing
@@ -60,38 +79,14 @@ function AdjacencyMatrix(n) {
             ps[p1Index] = {p: newPoint, n: 1};
             ps[p2Index] = mergedPoint;
             
-            // replace primary d(p1,_) dependent distances
-            var dIndex = this.getDIndex(p1Index);
-            for (var i = 0; i < p1Index; i++) {
-                ds[dIndex + i] = getDistance(newPoint, ps[i].p);
-            }
+            this.recalculateDistances(newPoint, p1Index);
+            this.recalculateDistances(mergedPoint.p, p2Index);
             
-            // replace secondary d(_,p1) dependent distances
-            for (var i = p1Index+1; i < len; i++) {
-                var dIndex = this.getDIndex(i);
-                ds[dIndex + p1Index] = getDistance(ps[i].p, newPoint);
-            }
-            
-            // replace primary d(p2,_) dependent distances
-            var dIndex = this.getDIndex(p2Index);
-            for (var i = 0; i < p2Index; i++) {
-                ds[dIndex + i] = getDistance(mergedPoint.p, ps[i].p);
-            }
-            
-            // replace secondary d(_,p2) dependent distances
-            for (var i = p2Index+1; i < len; i++) {
-                var dIndex = this.getDIndex(i);
-                ds[dIndex + p2Index] = getDistance(ps[i].p, mergedPoint.p);
-            }
-            
-            return p2Index;
-            
+            currClosestPoint = p2Index;
         }
+        
+        return currClosestPoint;
     }
-    
-    this.getDIndex = function(x) {
-        return 0.5 * x * (x-1);
-    } 
     
     // given an index in the distances array
     // returns the 2 points array indexes the distance was calculated from.
@@ -117,6 +112,5 @@ function AdjacencyMatrix(n) {
         }
         
         return minIndex;
-        
     }
 }

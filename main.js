@@ -25,7 +25,7 @@ jQuery(function(){
         }
     });
 });
-var n = 20;
+var n = 8;
 for (var i = 0; i < n; i++) graph.newNode({label: i, size: 10, color: "white"});
 var ns = graph.nodes;
 for (var i = 1; i < n; i++) {
@@ -87,8 +87,6 @@ function renderFrame() {
         }
         
     }
-        
-    
 
     info.innerHTML = monitor.getFPS();
 }
