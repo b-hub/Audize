@@ -51,7 +51,7 @@ function AdjacencyMatrix(n) {
         var len = ps.length;
         var n = this.n;
         
-        var currClosestPoint = len;
+        var changes = {merged: null, new: len};
         
         if (len == 0) {
             ps.push({p: newPoint, n: 1});
@@ -82,10 +82,11 @@ function AdjacencyMatrix(n) {
             this.recalculateDistances(newPoint, p1Index);
             this.recalculateDistances(mergedPoint.p, p2Index);
             
-            currClosestPoint = p2Index;
+            changes.merged = {from: p1Index, to: p2Index};
+            changes.new = p1Index;
         }
         
-        return currClosestPoint;
+        return changes;
     }
     
     // given an index in the distances array

@@ -26,12 +26,40 @@ jQuery(function(){
     });
 });
 var n = 8;
+
 for (var i = 0; i < n; i++) graph.newNode({label: i, size: 10, color: "white"});
 var ns = graph.nodes;
 for (var i = 1; i < n; i++) {
     for (var j = 0; j < i; j++) {
         graph.newEdge(ns[i], ns[j], {label: 0, length: 0, directional:false, color: "#aaa"});
     }
+}
+
+function graphStuff(matrix, graph) {
+    var changes = matrix.add(frequencyData);
+    var mergedIndex = (changes.merged) ? changes.merged.to : changes.new;
+    var ps = matrix.points;
+    for (var i = 0; i < ps.length; i++) {
+        var node = graph.nodes[i];
+        var point = ps[i];
+        node.data.label = i + "(" + point.n + ")";
+        node.data.size = Math.log(point.n) * 10;
+        if (i == mergedIndex) node.data.color = "red";
+        else node.data.color = "white";
+    }
+    var ds = matrix.distances;
+    for (var i = 0; i < ds.length; i++) {
+        var d = ds[i];
+        
+        if (d !== "undefined") {
+            var edge = graph.edges[i];
+            edge.data.label = Math.round(d) + 1;
+            edge.data.length = d
+        }
+        
+    }
+    
+    graph.notify();
 }
 
 //------------------------------------------------------------
@@ -66,27 +94,7 @@ function renderFrame() {
     freqVisualiser.draw();
     waveVisualiser.draw();
     
-    var mergedIndex = matrix.add(frequencyData);
-    var ps = matrix.points;
-    for (var i = 0; i < ps.length; i++) {
-        var node = graph.nodes[i];
-        var point = ps[i];
-        node.data.label = i + "(" + point.n + ")";
-        node.data.size = Math.log(point.n) * 10;
-        if (i == mergedIndex) node.data.color = "red";
-        else node.data.color = "white";
-    }
-    var ds = matrix.distances;
-    for (var i = 0; i < ds.length; i++) {
-        var d = ds[i];
-        
-        if (d !== "undefined") {
-            var edge = graph.edges[i];
-            edge.data.label = Math.round(d) + 1;
-            edge.data.length = d
-        }
-        
-    }
+    graphStuff(matrix, graph);
 
     info.innerHTML = monitor.getFPS();
 }
