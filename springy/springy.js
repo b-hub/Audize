@@ -125,6 +125,40 @@
 		this.notify();
 		return edge;
 	};
+    
+    Graph.prototype.mergeInto = function(n1, n2) {
+        var n1Targets = this.adjacency[n1.id];
+        var n2Targets = this.adjacency[n2.id];
+        
+        if (n2Targets === undefined) {
+            this.adjacency[n2.id] = n1Targets;
+            
+        } else{
+            for (target in n1Targets) {
+                var es = n2Targets[target];
+                if (es && es.length > 0) {
+                    es[0].data.label++;
+                } else {
+                    n2Targets[target] = [this.newEdge(n2, this.nodes[target], {label: 1, color: "white"})];
+                }
+            }
+        }
+        
+        for (source in this.adjacency) {
+            var ss = this.adjacency[source];
+            if (ss && n2.id in ss) {
+                var es = ss[n2.id];
+                if (es && es.length > 0) {
+                    es[0].data.label++;
+                } else {
+                    source[n2.id] = [this.newEdge(this.nodes[source], n2, {label: 1, color: "white"})];
+                }
+            }
+        }
+        
+        this.detachNode(n1);
+        
+    };
 
 	Graph.prototype.addEdges = function() {
 		// accepts variable number of arguments, where each argument

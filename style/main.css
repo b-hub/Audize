@@ -9,9 +9,13 @@ body {
     padding: 5px;
 }
 
+#data {
+    width: 100%;
+    word-break: break-all;
+    
+}
+
 canvas {
-    background-color: black;
-    
-    
+    background-color: black; 
 }
 

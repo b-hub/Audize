@@ -70,20 +70,44 @@ function AdjacencyMatrix(n) {
         // merge closest 2 points and do some really fancy replacing
         // 2n - 3 distance elements will need recalculating / replacing
         } else {
-            var closest = this.getCorrespondingPoints(this.minDistanceIndex());
-            var p1Index = closest.p1;
-            var p2Index = closest.p2;
-            var mergedPoint = this.merge(ps[p1Index], ps[p2Index]);
+            var minIndex = this.minDistanceIndex();
             
-            // swap (p1 and p2) for (merged and new point)
-            ps[p1Index] = {p: newPoint, n: 1};
-            ps[p2Index] = mergedPoint;
+            // if the new point in closest to an existing point - just merged it.
+            var minDist = ds[minIndex];
+            var smallerDistWith = undefined;
+            for (var i = 0; i < ps.length; i++) {
+                var d = getDistance(newPoint, ps[i].p);
+                if (d <= minDist) {
+                    minDist = d;
+                    smallerDistWith = i;
+                }
+            }
             
-            this.recalculateDistances(newPoint, p1Index);
-            this.recalculateDistances(mergedPoint.p, p2Index);
+            if (smallerDistWith !== undefined) {
+                var mergedPoint = this.merge({p:newPoint, n:1}, ps[smallerDistWith]);
+                ps[smallerDistWith] = mergedPoint;
+                this.recalculateDistances(mergedPoint.p, smallerDistWith);
+                
+                changes.new = smallerDistWith;
             
-            changes.merged = {from: p1Index, to: p2Index};
-            changes.new = p1Index;
+            // otherwise fancy stuff
+            } else {
+                var closest = this.getCorrespondingPoints(minIndex);
+                var p1Index = closest.p1;
+                var p2Index = closest.p2;
+                var mergedPoint = this.merge(ps[p1Index], ps[p2Index]);
+
+                // swap (p1 and p2) for (merged and new point)
+                ps[p1Index] = {p: newPoint, n: 1};
+                ps[p2Index] = mergedPoint;
+
+                this.recalculateDistances(newPoint, p1Index);
+                this.recalculateDistances(mergedPoint.p, p2Index);
+
+                changes.merged = {from: p1Index, to: p2Index};
+                changes.new = p1Index;
+            }
+            
         }
         
         return changes;
