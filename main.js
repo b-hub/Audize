@@ -5,7 +5,10 @@ var source = audioCtx.createMediaElementSource(myAudio);
 var analyser = audioCtx.createAnalyser();
 
 // analyser settings
+analyser.fftSize = 2048; // default = 2048
 analyser.smoothingTimeConstant = 0; // default = 0.8
+analyser.minDecibels = -75;  //default -100
+analyser.maxDecibels = -30; // default -30
 
 // connect everything up
 source.connect(analyser);
@@ -25,7 +28,7 @@ jQuery(function(){
         }
     });
 });
-var n = 8;
+var n = 16;
 
 for (var i = 0; i < n; i++) graph.newNode({label: i, size: 10, color: "white"});
 var ns = graph.nodes;
