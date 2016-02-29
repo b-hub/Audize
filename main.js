@@ -7,8 +7,8 @@ var analyser = audioCtx.createAnalyser();
 // analyser settings
 analyser.fftSize = 2048; // default = 2048
 analyser.smoothingTimeConstant = 0; // default = 0.8
-analyser.minDecibels = -75;  //default -100
-analyser.maxDecibels = -30; // default -30
+//analyser.minDecibels = -75;  //default -100
+//analyser.maxDecibels = -30; // default -30
 
 // connect everything up
 source.connect(analyser);
@@ -66,6 +66,7 @@ function graphStuff(matrix, graph) {
 }
 
 var lastNode = graph.nodes[0];
+var N = 1;
 function merge(graph, changes) {
     if (changes.merged) {
         graph.mergeInto(graph.nodes[changes.merged.from], 
@@ -76,14 +77,17 @@ function merge(graph, changes) {
     var mergedIndex = (changes.merged) ? changes.merged.to : changes.new;
     
     var ps = matrix.points;
+    var newN = 0;
     for (var i = 0; i < ps.length; i++) {
         var node = graph.nodes[i];
         var point = ps[i];
         node.data.label = i + "(" + point.n + ")";
-        node.data.size = Math.log(point.n) * 10;
+        node.data.size = 60 * point.n / N;
+        newN += point.n;
         if (i == mergedIndex) node.data.color = "red";
         else node.data.color = "white";
     }
+    N = newN;
     
     var newNode = graph.nodes[changes.new];
     var es = graph.getEdges(lastNode, newNode);
@@ -105,11 +109,15 @@ var timeData = new Uint8Array( bufferLength );
 
 var can = makeCanvas(window.innerWidth, 200);
 document.querySelector("#vHolder").appendChild(can);
+var hilbert = makeCanvas(512, 512);
+document.querySelector("#vHolder").appendChild(hilbert);
+
 var info = document.querySelector("#data");
 
 var freqVisualiser = new BarGraph("f", can, frequencyData);
 var waveVisualiser = new LineGraph("t", can, timeData);
 var dynamicLine = new DynamicLine("dl", can, 1, 0);
+var hilbertImg = new HilbertImage("hilbert", hilbert, frequencyData, 5);
     
 var monitor = new FpsMonitor(50);
 
@@ -128,6 +136,7 @@ function renderFrame() {
     freqVisualiser.clear();
     freqVisualiser.draw();
     waveVisualiser.draw();
+    hilbertImg.draw();
     
     //graphStuff(matrix, graph);
     var changes = matrix.add(frequencyData);

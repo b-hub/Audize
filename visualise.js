@@ -97,6 +97,38 @@ function DynamicLine(name, canvas, timescale, initY) {
     }
 }
 
+function HilbertImage(name, canvas, data, order) {
+    Visualiser.call(this, name, canvas);
+    this.data = data;
+    this.order = order;
+    var dimension = Math.pow(2, order);
+    this.scaleX = this.width / dimension;
+    this.scaleY = this.height / dimension;
+    this.mapping = hilbert_mapping(order);
+    
+    console.log(dimension + ", " + this.scaleX + ", " + this.scaleY);
+    var max = 0;
+    for (var i = 0; i < this.mapping.length; i++) {
+        max = Math.max(this.mapping[i].y, max);
+    }
+    console.log(max);
+    
+    this.draw = function() {
+        for (var i = 0; i < this.data.length; i++) {
+            var nAmp = this.data[i];
+            var pos = this.mapping[i];
+            
+            this.ctx.fillStyle = "rgb("+nAmp+","+nAmp+","+nAmp+")";
+            this.ctx.fillRect(pos.x * this.scaleX, 
+                              pos.y * this.scaleY, 
+                              this.scaleX,
+                              this.scaleY);
+            
+        }
+    }
+    
+}
+
 
 // used in render loop
 // higher the n, the smoother the FPS reading.
@@ -115,4 +147,6 @@ function FpsMonitor(n) {
     }
     
 }
+
+
 

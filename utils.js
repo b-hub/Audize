@@ -139,3 +139,30 @@ function AdjacencyMatrix(n) {
         return minIndex;
     }
 }
+
+function hilbert_mapping_helper(curPos, curDir, instructions, order) {
+    var rules = {'A': "-BF+AFA+FB-", 'B': "+AF-BFB-FA+"}
+    var map = [];
+
+    for (var i = 0; i < instructions.length; i++) {
+        var move = instructions[i];
+        if (rules[move] !== undefined && order > 0) {
+            map = map.concat(hilbert_mapping_helper(curPos, curDir, rules[move], order - 1));
+        } else if (move == '-') {
+            curDir = (curDir.x == 0) ? {x: curDir.y, y: curDir.x} : {x: 0, y: -curDir.x};
+        } else if (move == '+') {
+            curDir = (curDir.y == 0) ? {x: curDir.y, y: curDir.x} : {x: -curDir.y, y: 0};
+        } else if (move == 'F') {
+            curPos.x += curDir.x;
+            curPos.y += curDir.y;
+            map.push({x: curPos.x, y: curPos.y});
+        }
+    }
+    return map
+}
+
+function hilbert_mapping(order) {
+    return [{x:0,y:0}].concat(hilbert_mapping_helper({x:0,y:0}, {x:1,y:0}, 'B', order));
+}
+
+console.log(hilbert_mapping(1));
