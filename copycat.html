@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style/main.css"/>  
+</head>
+    
+<body>
+    
+    <div id="audioHolder">
+        <audio controls>  
+          <source src="music/lamb.mp3" type="audio/mp3">        
+          <p>Browser does not support HTML5 audio!</p>
+        </audio>
+    </div>
+    
+    <p id="data"></p>
+    
+    <script>
+        //-- AUDIO API SETUP ------------------------------------------
+        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        var myAudio = document.querySelector('audio');
+        var source = audioCtx.createMediaElementSource(myAudio);
+        var analyser = audioCtx.createAnalyser();
+        
+        source.connect(analyser);
+
+        // analyser settings
+        analyser.fftSize = 2048; // default = 2048
+        analyser.smoothingTimeConstant = 0; // default = 0.8
+        
+        var bufferLength = analyser.frequencyBinCount;
+        var frequencyData = new Uint8Array( bufferLength );
+        
+        var os1 = audioCtx.createOscillator();
+        os1.connect(audioCtx.destination);
+        
+        os1.type = 'square';
+        os1.frequency.value = 1000;
+        os1.start();
+        
+        console.log(os1.frequency);
+        
+        function renderFrame() {
+            requestAnimationFrame(renderFrame);
+            
+            analyser.getByteFrequencyData(frequencyData);
+            var max = 0; 
+            var maxIndex = 0;
+            for (var i = 0; i < bufferLength; i++) {
+                var amp = frequencyData[i];
+                if (amp > max) {
+                    max = amp;
+                    maxIndex = i;
+                }
+            }
+            os1.frequency.value = maxIndex * 48000 / bufferLength;
+            document.getElementById('data').innerHTML = os1.frequency.value;
+            
+        }
+        
+        renderFrame();
+        
+        
+        
+        
+    </script>
+    
+</body>
+    
+</html>

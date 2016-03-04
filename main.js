@@ -31,12 +31,6 @@ jQuery(function(){
 var n = 16;
 
 for (var i = 0; i < n; i++) graph.newNode({label: i, size: 10, color: "white"});
-var ns = graph.nodes;
-for (var i = 1; i < n; i++) {
-    for (var j = 0; j < i; j++) {
-        //graph.newEdge(ns[i], ns[j], {label: 1, length: 0, directional:true, color: "#aaa"});
-    }
-}
 
 function graphStuff(matrix, graph) {
     var changes = matrix.add(frequencyData);
@@ -109,7 +103,7 @@ var timeData = new Uint8Array( bufferLength );
 
 var can = makeCanvas(window.innerWidth, 200);
 document.querySelector("#vHolder").appendChild(can);
-var hilbert = makeCanvas(512, 512);
+var hilbert = makeCanvas(window.innerWidth, window.innerWidth);
 document.querySelector("#vHolder").appendChild(hilbert);
 
 var info = document.querySelector("#data");
@@ -138,7 +132,6 @@ function renderFrame() {
     waveVisualiser.draw();
     hilbertImg.draw();
     
-    //graphStuff(matrix, graph);
     var changes = matrix.add(frequencyData);
     merge(graph, changes);
     
